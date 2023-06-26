@@ -5,7 +5,17 @@
     </a-layout-sider>
     <a-layout>
       <a-layout-header>
-        <a-menu v-bind="topMenuRt"></a-menu>
+        <div class="header">
+          <div class="header-logo"></div>
+          <div class="header-menu">
+            <a-menu v-bind="topMenuRt"></a-menu>
+          </div>
+          <div class="header-right">
+            <div class="header-item" @click="openSetting">
+              <SettingOutlined/>
+            </div>
+          </div>
+        </div>
       </a-layout-header>
       <a-layout-content>
         <a-card>
@@ -17,13 +27,19 @@
       </a-layout-content>
     </a-layout>
   </a-layout>
+  <Setting ref="settingRef"></Setting>
 </template>
 <script setup lang="ts">
 import {ref, reactive, onMounted,watch} from 'vue'
 import {useAppStore} from '@/store'
 import menuJson from '@/data/menu.json'
+import {SettingOutlined} from '@ant-design/icons-vue'
+import Setting from './setting/index.vue'
 
 const {setColorPrimary, setTheme} = useAppStore();
+
+//引用
+const settingRef = ref()
 
 //主题色序号
 const colorIndex = ref(0)
@@ -120,8 +136,44 @@ watch(()=>darkRef.value,value=>{
   }
 })
 
+//打开个人自定义设置
+const openSetting = ()=>{
+  settingRef.value.open()
+}
+
 onMounted(() => {
   init()
 })
 
 </script>
+<style scoped>
+
+.header{
+  display: flex;
+  flex-direction: row;
+  align-content: center;
+}
+.header-menu{
+  flex: 1;
+}
+.header-right{
+  background-color: #fff;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-item{
+  height: 64px;
+  width: 48px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.header-item .anticon{
+  font-size: 18px;
+}
+</style>
