@@ -17,24 +17,43 @@
           </div>
         </div>
       </a-layout-header>
-      <a-layout-content>
-        <a-card>
+      <a-layout-content style="padding: 12px;">
+        <a-card size="small">
           <a-space>
             <a-button type="primary" @click="updateTheme">设置主题</a-button>
             <a-button type="primary" @click="updateColorPrimary">设置主题色</a-button>
           </a-space>
         </a-card>
+
+        <a-card size="small" style="margin: 12px 0px;">
+          <a-form layout="inline" :model="formRt">
+            <a-form-item label="虚拟滚动">
+              <a-select v-model:value="formRt.id" :options="options_id" style="width: 120px;"></a-select>
+            </a-form-item>
+            <a-form-item label="名称">
+              <a-input v-model:value="formRt.name"/>
+            </a-form-item>
+            <a-form-item>
+              <a-space>
+                <a-button>清除</a-button>
+                <a-button type="primary">查询</a-button>
+              </a-space>
+            </a-form-item>
+          </a-form>
+        </a-card>
+        <a-table v-bind="tableRt"></a-table>
       </a-layout-content>
     </a-layout>
   </a-layout>
   <Setting ref="settingRef"></Setting>
 </template>
 <script setup lang="ts">
-import {ref, reactive, onMounted,watch} from 'vue'
+import {ref, reactive, onMounted, watch} from 'vue'
 import {useAppStore} from '@/store'
 import menuJson from '@/data/menu.json'
 import {SettingOutlined} from '@ant-design/icons-vue'
 import Setting from './setting/index.vue'
+import dayjs from 'dayjs'
 
 const {setColorPrimary, setTheme} = useAppStore();
 
@@ -114,7 +133,7 @@ const convertMenu = (tree): [] => {
       label: key,
       title: key,
     }
-    if(children && children.length>0){
+    if (children && children.length > 0) {
       menu['children'] = convertMenu(children)
     }
     return menu
@@ -122,23 +141,102 @@ const convertMenu = (tree): [] => {
   return menus
 }
 
-const init = () => {
-  buildTopMenu();
-}
-
-watch(()=>darkRef.value,value=>{
-  if(value){
+watch(() => darkRef.value, value => {
+  if (value) {
     topMenuRt.theme = 'dark'
     siderMenuRt.theme = 'dark'
-  }else{
+  } else {
     topMenuRt.theme = 'light'
     siderMenuRt.theme = 'light'
   }
 })
 
 //打开个人自定义设置
-const openSetting = ()=>{
+const openSetting = () => {
   settingRef.value.open()
+}
+
+//搜索表单
+const formRt = reactive({
+  id: undefined,
+  name: '',
+})
+
+//搜索框select,测试虚拟滚动
+const options_id = ref([])
+
+//初始化虚拟列数据
+const init_options_id = (size = 10000) => {
+  const arr = []
+  for (let i = 0; i < size; i++) {
+    arr.push({
+      label: `字段-${i}`,
+      value: i,
+    })
+  }
+  options_id.value = arr
+}
+
+//时间戳格式化
+const timestampFormat = (timestamp)=>{
+  return dayjs.unix(timestamp).format('YYYY-MM-DD HH:mm')
+}
+
+//表格列
+const columns = [
+  {dataIndex: 'id', title: 'ID'},
+  {dataIndex: 'name', title: '名称'},
+  {dataIndex: 'value', title: '值'},
+  {dataIndex: 'createDate', title: '创建时间',customRender:({text})=>timestampFormat(text)},
+]
+
+//表格
+const tableRt = reactive({
+  rowKey: 'id',
+  columns: columns,
+  dataSource: [],
+  pagination: false,
+})
+
+//随机字符,40869 - 19968
+const randomChar = (size=10):string=>{
+  const arr = []
+  const u = '\\u';
+  for(let i=0;i<size;i++){
+    const value = randomNumber(40869,19968)
+    const char = `${u}${value.toString(16)}`;
+    const text = unescape(char.replace(/\\u/g, "%u"));
+    arr.push(text)
+  }
+  return arr.join('')
+}
+
+//随机数
+const randomNumber = (min=0,max=10000):number=>{
+  return Math.floor(Math.random() * (max - min)) + min; //不含最大值，含最小值
+}
+
+//初始化表格数据
+const initDataSource = (size=100)=>{
+  const arr = []
+  const min = 1577808000;//2020-01-01 00:00:00
+  const max = dayjs().unix();//当前时间戳
+  for(let i=0;i<size;i++){
+    arr.push({
+      id:i,
+      name:randomChar(),
+      value:Math.random(),
+      createDate: randomNumber(min,max),
+    })
+  }
+  tableRt.dataSource = arr
+}
+
+//初始化
+const init = () => {
+  buildTopMenu()
+  init_options_id()
+  initDataSource(10)
 }
 
 onMounted(() => {
@@ -148,15 +246,17 @@ onMounted(() => {
 </script>
 <style scoped>
 
-.header{
+.header {
   display: flex;
   flex-direction: row;
   align-content: center;
 }
-.header-menu{
+
+.header-menu {
   flex: 1;
 }
-.header-right{
+
+.header-right {
   background-color: #fff;
   display: flex;
   flex-direction: row;
@@ -164,7 +264,7 @@ onMounted(() => {
   align-items: center;
 }
 
-.header-item{
+.header-item {
   height: 64px;
   width: 48px;
   display: flex;
@@ -173,7 +273,7 @@ onMounted(() => {
   align-items: center;
 }
 
-.header-item .anticon{
+.header-item .anticon {
   font-size: 18px;
 }
 </style>
