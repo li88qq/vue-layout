@@ -55,7 +55,7 @@
   <Setting ref="settingRef"></Setting>
 </template>
 <script setup lang="ts">
-import {ref, reactive, onMounted, watch,computed } from 'vue'
+import {ref, reactive, onMounted, watch,computed ,unref} from 'vue'
 import {useAppStore} from '@/store'
 import menuJson from '@/data/menu.json'
 import {SettingOutlined} from '@ant-design/icons-vue'
@@ -253,13 +253,16 @@ const scrollRef = ref<HTMLElement|null>(null);
 const { y } = useScroll(scrollRef);
 //虚拟列表元素高度
 const itemHeight = 24;
+//滚动容器高度
 const scrollHeight = 400;
 
 //虚拟列表数据
 const virtualList = computed(()=>{
-  const startIndex = Math.floor(y/itemHeight);//开始索引
-  const totalSize = Math.ceil(scrollHeight/itemHeight);
-  const endIndex = startIndex+totalSize;//结束索引
+  const scrollY = unref(y);//滚动y
+  const startIndex = Math.floor(scrollY/itemHeight);//开始索引
+  const totalSize = Math.ceil(scrollHeight/itemHeight);//滚动容器内最多显示数量
+  let endIndex = startIndex + totalSize;//结束索引
+  endIndex = Math.min(endIndex,options_id.value.length);//防止数组下标越界
   const array = options_id.value.slice(startIndex,endIndex);
   return array;
 })
