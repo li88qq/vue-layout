@@ -41,19 +41,27 @@
             </a-form-item>
           </a-form>
         </a-card>
-        <a-table v-bind="tableRt"></a-table>
+<!--        <a-table v-bind="tableRt"></a-table>-->
+        <div ref="scrollRef" class="scroll-wrapper">
+          <div class="scroll" :style="{height:`${options_id.length * 24}px`}">
+            <template v-for="item in virtualList" :key="item['value']">
+              <div class="scroll-item" :style="{top:`${item['value']*itemHeight}px`}">{{`${item.value}-${item.label}`}}</div>
+            </template>
+          </div>
+        </div>
       </a-layout-content>
     </a-layout>
   </a-layout>
   <Setting ref="settingRef"></Setting>
 </template>
 <script setup lang="ts">
-import {ref, reactive, onMounted, watch} from 'vue'
+import {ref, reactive, onMounted, watch,computed } from 'vue'
 import {useAppStore} from '@/store'
 import menuJson from '@/data/menu.json'
 import {SettingOutlined} from '@ant-design/icons-vue'
 import Setting from './setting/index.vue'
 import dayjs from 'dayjs'
+import { useScroll } from '@vueuse/core'
 
 const {setColorPrimary, setTheme} = useAppStore();
 
@@ -236,8 +244,25 @@ const initDataSource = (size=100)=>{
 const init = () => {
   buildTopMenu()
   init_options_id()
-  initDataSource(10)
+  initDataSource(100)
 }
+
+//虚拟列表组件引用
+const scrollRef = ref<HTMLElement|null>(null);
+//虚拟列表y滚动
+const { y } = useScroll(scrollRef);
+//虚拟列表元素高度
+const itemHeight = 24;
+const scrollHeight = 400;
+
+//虚拟列表数据
+const virtualList = computed(()=>{
+  const startIndex = Math.floor(y/itemHeight);//开始索引
+  const totalSize = Math.ceil(scrollHeight/itemHeight);
+  const endIndex = startIndex+totalSize;//结束索引
+  const array = options_id.value.slice(startIndex,endIndex);
+  return array;
+})
 
 onMounted(() => {
   init()
@@ -275,5 +300,22 @@ onMounted(() => {
 
 .header-item .anticon {
   font-size: 18px;
+}
+
+.scroll-wrapper{
+  width: 200px;
+  height: 400px;
+  overflow: auto;
+}
+.scroll{
+  position: relative;
+}
+.scroll-item{
+  height: 24px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
 }
 </style>
