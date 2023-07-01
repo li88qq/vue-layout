@@ -59,13 +59,14 @@
   <Setting ref="settingRef"></Setting>
 </template>
 <script setup lang="ts">
-import {ref, reactive, onMounted, watch,computed ,unref} from 'vue'
+import {ref, reactive, onMounted, watch,computed ,unref,h} from 'vue'
 import {useAppStore} from '@/store'
 import menuJson from '@/data/menu.json'
 import {SettingOutlined} from '@ant-design/icons-vue'
 import Setting from './setting/index.vue'
 import dayjs from 'dayjs'
 import { useScroll } from '@vueuse/core'
+import VirtualTable from './virtualtable/index.vue'
 
 const {setColorPrimary, setTheme} = useAppStore();
 
@@ -196,10 +197,10 @@ const timestampFormat = (timestamp)=>{
 
 //表格列
 const columns = [
-  {dataIndex: 'id', title: 'ID'},
-  {dataIndex: 'name', title: '名称'},
-  {dataIndex: 'value', title: '值'},
-  {dataIndex: 'createDate', title: '创建时间',customRender:({text})=>timestampFormat(text)},
+  {dataIndex: 'id', title: 'ID',width:60},
+  {dataIndex: 'name', title: '名称',width:150},
+  {dataIndex: 'value', title: '值',width:150},
+  {dataIndex: 'createDate', title: '创建时间',customRender:({text})=>timestampFormat(text),width:150},
 ]
 
 //表格
@@ -210,7 +211,15 @@ const tableRt = reactive({
   pagination: false,
   scroll:{
     y:400,
-  }
+  },
+  components: {
+    body: (rawData,{scrollbarSize, ref, onScroll})=>{
+      if(rawData.length===0){
+        return h('div');
+      }
+      return h(VirtualTable,{rawData});
+    }
+  },
 })
 
 //随机字符,40869 - 19968
@@ -251,7 +260,7 @@ const initDataSource = (size=100)=>{
 const init = () => {
   buildTopMenu()
   init_options_id()
-  initDataSource(100)
+  initDataSource(10000)
 }
 
 //虚拟列表组件引用
