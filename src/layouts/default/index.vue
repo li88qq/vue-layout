@@ -41,12 +41,16 @@
             </a-form-item>
           </a-form>
         </a-card>
-<!--        <a-table v-bind="tableRt"></a-table>-->
-        <div ref="scrollRef" class="scroll-wrapper">
-          <div class="scroll" :style="{height:`${options_id.length * 24}px`}">
-            <template v-for="item in virtualList" :key="item['value']">
-              <div class="scroll-item" :style="{top:`${item['value']*itemHeight}px`}">{{`${item.value}-${item.label}`}}</div>
-            </template>
+        <div class="view-main">
+          <div ref="scrollRef" class="scroll-wrapper">
+            <div class="scroll" :style="{height:`${options_id.length * 24}px`}">
+              <template v-for="item in virtualList" :key="item['value']">
+                <div class="scroll-item" :style="{top:`${item['value']*itemHeight}px`}">{{`${item.value}-${item.label}`}}</div>
+              </template>
+            </div>
+          </div>
+          <div class="table-wrapper">
+            <a-table v-bind="tableRt"></a-table>
           </div>
         </div>
       </a-layout-content>
@@ -204,6 +208,9 @@ const tableRt = reactive({
   columns: columns,
   dataSource: [],
   pagination: false,
+  scroll:{
+    y:400,
+  }
 })
 
 //随机字符,40869 - 19968
@@ -309,6 +316,7 @@ onMounted(() => {
   width: 200px;
   height: 400px;
   overflow: auto;
+  background-color: #fff;
 }
 .scroll{
   position: relative;
@@ -320,5 +328,13 @@ onMounted(() => {
   justify-content: center;
   align-items: center;
   position: absolute;
+}
+.view-main{
+  display: flex;
+  flex-direction: row;
+}
+.table-wrapper{
+  flex: 1;
+  margin-left: 24px;
 }
 </style>
