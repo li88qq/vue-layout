@@ -197,7 +197,7 @@ const timestampFormat = (timestamp)=>{
 
 //表格列
 const columns = [
-  {dataIndex: 'id', title: 'ID',width:60},
+  {dataIndex: 'id', title: 'ID',width:150},
   {dataIndex: 'name', title: '名称',width:150},
   {dataIndex: 'value', title: '值',width:150},
   {dataIndex: 'createDate', title: '创建时间',customRender:({text})=>timestampFormat(text),width:150},
@@ -212,14 +212,14 @@ const tableRt = reactive({
   scroll:{
     y:400,
   },
-  components: {
-    body: (rawData,{scrollbarSize, ref, onScroll})=>{
-      if(rawData.length===0){
-        return h('div');
-      }
-      return h(VirtualTable,{rawData});
+  //自定义内容
+  components:{
+    body: (rawData)=>{
+      const defaultConfig = {showHeader:false,dataSource:[],components:undefined,scroll: {}}
+      const config = {...tableRt,...defaultConfig}
+      return h(VirtualTable, {config,rawData})
     }
-  },
+  }
 })
 
 //随机字符,40869 - 19968
