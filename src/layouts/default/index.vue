@@ -64,7 +64,7 @@ import {useAppStore} from '@/store'
 import menuJson from '@/data/menu.json'
 import {SettingOutlined} from '@ant-design/icons-vue'
 import Setting from './setting/index.vue'
-import dayjs from 'dayjs'
+import * as dayjs from 'dayjs'
 import { useScroll } from '@vueuse/core'
 import VirtualTable from './virtualtable/index.vue'
 
