@@ -1,0 +1,4 @@
+/*灰色模式*/
+.gray{
+    filter: grayscale(1);
+}

@@ -53,7 +53,7 @@
         <a-checkbox/>
       </a-form-item>
       <a-form-item label="灰色模式">
-        <a-checkbox/>
+        <a-checkbox v-model:checked="getGray"/>
       </a-form-item>
       <a-form-item label="色弱模式">
         <a-checkbox/>
@@ -82,7 +82,10 @@
   </div>
 </template>
 <script setup lang="ts">
-import {ref, reactive} from 'vue'
+import {ref, reactive, computed} from 'vue'
+import {useAppStore} from '@/store'
+
+const appStore = useAppStore()
 
 //设置表单
 const formRt = reactive({
@@ -116,5 +119,11 @@ const options_topBackGroupColor = []
 
 //左侧主题色
 const options_siderBackGroupColor = []
+
+//灰色模式
+const getGray = computed({
+  get:()=>appStore.gray,
+  set:(value)=>appStore.gray = value
+})
 
 </script>

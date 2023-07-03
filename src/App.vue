@@ -31,4 +31,14 @@ watch(()=>appStore.theme,value=>{
   }
 })
 
+//灰色模式
+watch(()=>appStore.gray,value=>{
+  const html = document.getElementsByTagName('html')[0];
+  if(value){
+    html.classList.add('gray')
+  }else{
+    html.classList.remove('gray')
+  }
+})
+
 </script>
