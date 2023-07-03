@@ -56,7 +56,7 @@
         <a-checkbox v-model:checked="getGray"/>
       </a-form-item>
       <a-form-item label="色弱模式">
-        <a-checkbox/>
+        <a-checkbox v-model:checked="getInvert"/>
       </a-form-item>
 
       <a-divider>动画</a-divider>
@@ -123,7 +123,13 @@ const options_siderBackGroupColor = []
 //灰色模式
 const getGray = computed({
   get:()=>appStore.gray,
-  set:(value)=>appStore.gray = value
+  set:(value:boolean)=>appStore.gray = value
+})
+
+//灰色模式
+const getInvert = computed({
+  get:()=>appStore.invert,
+  set:(value:boolean)=>appStore.invert = value
 })
 
 </script>

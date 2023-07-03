@@ -1,4 +1,9 @@
 /*灰色模式*/
 .gray{
-    filter: grayscale(1);
+    filter: grayscale(100%);
+}
+
+/*色弱模式*/
+.invert{
+    filter: invert(80%);
 }

@@ -41,4 +41,14 @@ watch(()=>appStore.gray,value=>{
   }
 })
 
+//色弱模式
+watch(()=>appStore.invert,value=>{
+  const html = document.getElementsByTagName('html')[0];
+  if(value){
+    html.classList.add('invert')
+  }else{
+    html.classList.remove('invert')
+  }
+})
+
 </script>
